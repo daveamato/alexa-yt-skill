@@ -2,23 +2,29 @@ var alexa = require("alexa-app");
 var fs = require('fs');
 var request = require('request');
 var ssml = require('ssml-builder');
-
+var express = require('express');
 var response_strings = require('./responses');
 
-var app = new alexa.app("youtube");
-
-var herokuAppUrl = process.env.HEROKU_APP_URL;
-if (!herokuAppUrl || herokuAppUrl === 0) {
-  herokuAppUrl = 'https://amato-youtube.herokuapp.com';
-}
+var herokuAppUrl = process.env.HEROKU_APP_URL || 'https://amato-youtube.herokuapp.com';
+var PORT = process.env.port || 8080;
 
 var lastSearch;
 var lastToken;
-
 var lastPlaybackStart;
 var lastPlaybackStop;
-
 var repeatEnabled = false;
+
+var app = new alexa.app("youtube");
+var expressApp = express();
+
+app.express({
+  expressApp: expressApp,
+  checkCert: true,
+  debug: false
+});
+
+expressApp.set("view engine", "ejs");
+
 
 String.prototype.formatUnicorn = String.prototype.formatUnicorn || function () {
   "use strict";
@@ -246,4 +252,5 @@ app.intent("AMAZON.StopIntent", {}, function(req, response) {
   response.send();
 });
 
-exports.handler = app.lambda();
+expressApp.listen(PORT);
+console.log("Listening on port " + PORT + ", try http://localhost:" + PORT + "/youtube");
