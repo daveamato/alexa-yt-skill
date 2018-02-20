@@ -20,7 +20,7 @@ var alexaApp = new alexa.app("youtube");
 alexaApp.express({
   expressApp: app,
   checkCert: true,
-  debug: true
+  debug: false
 });
 
 app.set("view engine", "ejs");
