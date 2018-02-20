@@ -6,7 +6,8 @@ var express = require('express');
 var response_strings = require('./responses');
 
 var herokuAppUrl = process.env.HEROKU_APP_URL || 'https://amato-youtube.herokuapp.com';
-var PORT = process.env.port || 80;
+var PORT = process.env.PORT || 8080;
+var app = express();
 
 var lastSearch;
 var lastToken;
@@ -14,16 +15,15 @@ var lastPlaybackStart;
 var lastPlaybackStop;
 var repeatEnabled = false;
 
-var app = new alexa.app("youtube");
-var expressApp = express();
+var alexaApp = new alexa.app("youtube");
 
-app.express({
-  expressApp: expressApp,
+alexaApp.express({
+  expressApp: app,
   checkCert: false,
   debug: true
 });
 
-expressApp.set("view engine", "ejs");
+app.set("view engine", "ejs");
 
 
 String.prototype.formatUnicorn = String.prototype.formatUnicorn || function () {
@@ -43,7 +43,7 @@ String.prototype.formatUnicorn = String.prototype.formatUnicorn || function () {
   return str;
 };
 
-app.pre = function(req, response, type) {
+alexaApp.pre = function(req, response, type) {
   if (req.data.session !== undefined) {
     if (req.data.session.application.applicationId !== process.env.ALEXA_APPLICATION_ID) {
       response.fail("Invalid application");
@@ -55,7 +55,7 @@ app.pre = function(req, response, type) {
   }
 };
 
-app.intent("GetVideoIntent", {
+alexaApp.intent("GetVideoIntent", {
     "slots": {
       "VideoQuery": "VIDEOS",
     },
@@ -72,7 +72,7 @@ app.intent("GetVideoIntent", {
   }
 );
 
-app.intent("GetVideoGermanIntent", {
+alexaApp.intent("GetVideoGermanIntent", {
     "slots": {
       "VideoQuery": "VIDEOS",
     },
@@ -171,11 +171,11 @@ function recursive_check(id, delay, callback) {
   }, delay);
 }
 
-app.audioPlayer("PlaybackStarted", function(req, response) {
+alexaApp.audioPlayer("PlaybackStarted", function(req, response) {
   console.log('Playback started.');
 });
 
-app.audioPlayer("PlaybackFinished", function(req, response) {
+alexaApp.audioPlayer("PlaybackFinished", function(req, response) {
   console.log('Playback finished.');
   if (repeatEnabled && lastSearch) {
     console.log('Repeat was enabled. Playing ' + lastSearch + ' again ...');
@@ -190,19 +190,19 @@ app.audioPlayer("PlaybackFinished", function(req, response) {
   }
 });
 
-app.audioPlayer("PlaybackFailed", function(req, response) {
+alexaApp.audioPlayer("PlaybackFailed", function(req, response) {
   console.log('Playback failed.');
   console.log(req.data.request);
   console.log(req.data.request.error);
 });
 
-app.intent("AMAZON.PauseIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.PauseIntent", {}, function(req, response) {
   response.audioPlayerStop();
   lastPlaybackStop = new Date().getTime();
   response.send();
 });
 
-app.intent("AMAZON.ResumeIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.ResumeIntent", {}, function(req, response) {
   if (lastSearch === undefined) {
     response.say(response_strings[req.data.request.locale]['NOTHING_TO_RESUME']);
   } else {
@@ -216,7 +216,7 @@ app.intent("AMAZON.ResumeIntent", {}, function(req, response) {
   response.send();
 });
 
-app.intent("AMAZON.RepeatIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.RepeatIntent", {}, function(req, response) {
   if (lastSearch === undefined) {
     response.say(response_strings[req.data.request.locale]['NOTHING_TO_REPEAT']);
   } else {
@@ -231,26 +231,25 @@ app.intent("AMAZON.RepeatIntent", {}, function(req, response) {
   response.send();
 });
 
-app.intent("AMAZON.LoopOnIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.LoopOnIntent", {}, function(req, response) {
   console.log('Repeat enabled.');
   repeatEnabled = true;
   response.say(response_strings[req.data.request.locale]['LOOP_ON_TRIGGERED']);
   response.send();
 });
 
-app.intent("AMAZON.LoopOffIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.LoopOffIntent", {}, function(req, response) {
   console.log('Repeat disabled.');
   repeatEnabled = false;
   response.say(response_strings[req.data.request.locale]['LOOP_OFF_TRIGGERED']);
   response.send();
 });
 
-app.intent("AMAZON.StopIntent", {}, function(req, response) {
+alexaApp.intent("AMAZON.StopIntent", {}, function(req, response) {
   lastSearch = undefined;
   response.audioPlayerStop();
   response.audioPlayerClearQueue();
   response.send();
 });
 
-expressApp.listen(PORT);
-// console.log("Listening on port " + PORT + ", try http://localhost:" + PORT + "/youtube");
+app.listen(PORT, () => console.log("Listening on port " + PORT + "!"));
