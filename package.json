@@ -1,24 +1,31 @@
 {
-  "name": "alexa-youtube-skill",
-  "version": "2.0.1",
-  "description": "You can search YouTube for video audio now!",
-  "engines": {
-    "node": "6.1.0"
-  },
+  "name": "alexa-yt-skill",
+  "version": "4.0.1",
+  "description": "Search YouTube for audio.",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
-    "alexa-app": "4.0.1",
-    "express": "^4.16.2",
+    "alexa-app": "^4.0.0",
+    "ejs": "^2.5.6",
+    "express": "^4.15.2",
     "request": "2.81.0",
     "ssml-builder": "^0.2.4"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/daveamato/alexa-yt-skill"
+    "url": "git+https://github.com/daveamato/alexa-yt-skill.git"
   },
   "keywords": [
     "alexa",
-    "youtube"
+    "youtube",
+    "echo",
+    "skills"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url" : "https://github.com/daveamato/alexa-yt-skill/issues"
+  }
 }
