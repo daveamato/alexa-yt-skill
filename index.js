@@ -6,7 +6,7 @@ var express = require('express');
 var response_strings = require('./responses');
 
 var herokuAppUrl = process.env.HEROKU_APP_URL || 'https://amato-youtube.herokuapp.com';
-var PORT = process.env.port || 8080;
+var PORT = process.env.port || 80;
 
 var lastSearch;
 var lastToken;
@@ -19,8 +19,8 @@ var expressApp = express();
 
 app.express({
   expressApp: expressApp,
-  checkCert: true,
-  debug: false
+  checkCert: false,
+  debug: true
 });
 
 expressApp.set("view engine", "ejs");
@@ -253,4 +253,4 @@ app.intent("AMAZON.StopIntent", {}, function(req, response) {
 });
 
 expressApp.listen(PORT);
-console.log("Listening on port " + PORT + ", try http://localhost:" + PORT + "/youtube");
+// console.log("Listening on port " + PORT + ", try http://localhost:" + PORT + "/youtube");
