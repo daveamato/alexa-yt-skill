@@ -1,4 +1,4 @@
-  var alexa = require("alexa-app");
+var alexa = require("alexa-app");
 var fs = require('fs');
 var request = require('request');
 var ssml = require('ssml-builder');
@@ -23,6 +23,7 @@ alexaApp.express({
   debug: false
 });
 
+app.set('views', __dirname + '/views');
 app.set("view engine", "ejs");
 
 
