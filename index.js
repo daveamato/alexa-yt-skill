@@ -1,4 +1,4 @@
-var alexa = require("alexa-app");
+  var alexa = require("alexa-app");
 var fs = require('fs');
 var request = require('request');
 var ssml = require('ssml-builder');
@@ -6,7 +6,7 @@ var express = require('express');
 var response_strings = require('./responses');
 
 var herokuAppUrl = process.env.HEROKU_APP_URL || 'https://amato-youtube.herokuapp.com';
-var PORT = process.env.PORT || 8181;
+var PORT = process.env.PORT || 443;
 var app = express();
 
 var lastSearch;

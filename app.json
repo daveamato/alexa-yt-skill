@@ -1,0 +1,13 @@
+{
+  "name": "alexa-yt-skill",
+  "description": "A simple alexa-app example for Heroku.",
+  "repository": "https://github.com/daveamato/alexa-yt-skill",
+  "logo": "https://avatars.githubusercontent.com/u/551039",
+  "keywords": ["alexa", "amazon", "echo", "skills"],
+  "success_url": "/youtube",
+  "buildpacks": [   
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
