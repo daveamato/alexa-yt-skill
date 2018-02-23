@@ -12,7 +12,8 @@
     "ejs": "^2.5.6",
     "express": "^4.15.2",
     "request": "^2.83.0",
-    "ssml-builder": "^0.4.3"
+    "ssml-builder": "^0.4.3",
+    "youtube-search": "^1.0.10"
   },
   "repository": {
     "type": "git",
