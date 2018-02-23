@@ -1,1 +1,1 @@
-# alexa-youtube-skill README
+# alexa-youtube-skill

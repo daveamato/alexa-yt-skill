@@ -3,6 +3,7 @@ var fs = require('fs');
 var request = require('request');
 var ssml = require('ssml-builder');
 var express = require('express');
+var yt_search = require('youtube-search');
 var response_strings = require('./responses');
 
 var herokuAppUrl = process.env.HEROKU_APP_URL || 'https://amato-youtube.herokuapp.com';
@@ -14,6 +15,12 @@ var lastToken;
 var lastPlaybackStart;
 var lastPlaybackStop;
 var repeatEnabled = false;
+
+var YT_KEY = process.env.YOUTUBE_API_KEY || "";
+var YT_OPTS = {
+  maxResults: 2,
+  key: YT_KEY
+};
 
 var alexaApp = new alexa.app("youtube");
 
@@ -73,22 +80,13 @@ alexaApp.intent("GetVideoIntent", {
   }
 );
 
-alexaApp.intent("GetVideoGermanIntent", {
-    "slots": {
-      "VideoQuery": "VIDEOS",
-    },
-    "utterances": [
-      "suchen nach {-|VideoQuery}",
-      "finde {-|VideoQuery}",
-      "spielen {-|VideoQuery}",
-      "anfangen zu spielen {-|VideoQuery}",
-      "anziehen {-|VideoQuery}"
-    ]
-  },
-  function(req, response) {
-    return get_executable_promise(req, response, 'de-DE');
-  }
-);
+function search_yt(query) {
+  search(query, YT_OPTS, function(err, results) {
+    if(err) return console.log(err);
+    console.dir(results);
+    return results;
+  });
+}
 
 function get_executable_promise(req, response, language) {
   var query = req.slot("VideoQuery");
@@ -98,10 +96,6 @@ function get_executable_promise(req, response, language) {
   return new Promise((resolve, reject) => {
 
     var searchUrl = herokuAppUrl + '/alexa-search/' + new Buffer(query).toString('base64');
-
-    if (language === 'de-DE') {
-      searchUrl += '?language=de';
-    }
 
     request(searchUrl, function(err, res, body) {
       if (err) {
@@ -247,6 +241,13 @@ alexaApp.intent("AMAZON.LoopOffIntent", {}, function(req, response) {
 });
 
 alexaApp.intent("AMAZON.StopIntent", {}, function(req, response) {
+  lastSearch = undefined;
+  response.audioPlayerStop();
+  response.audioPlayerClearQueue();
+  response.send();
+});
+
+alexaApp.intent("AMAZON.CancelIntent", {}, function(req, response) {
   lastSearch = undefined;
   response.audioPlayerStop();
   response.audioPlayerClearQueue();
